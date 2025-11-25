@@ -166,6 +166,7 @@ void displayBookings() {
    ================================ */
 void showSeatAvailability(char mode[]) {
     char date[12];
+    int taken[MAX_SEATS] = {0};
 
     printf("Enter date to check availability (YYYY-MM-DD): ");
     if (fgets(date, sizeof(date), stdin) == NULL) {
@@ -176,31 +177,28 @@ void showSeatAvailability(char mode[]) {
 
     printf("\n--- Seat Availability for %s on %s ---\n", mode, date);
 
-    int taken[MAX_SEATS] = {0};
-
-    /* Mark seats already booked for that mode and date */
+    /* Mark seats taken for this mode + date */
     for (int i = 0; i < bookingCount; i++) {
-        if (strcasecmp(bookings[i].mode, mode) == 0) {
-            if (bookings[i].date[0] != '\0' && strcmp(bookings[i].date, date) == 0) {
-                int s = bookings[i].seatNumber;
-                if (s > 0 && s <= MAX_SEATS)
-                    taken[s - 1] = 1;
-            }
+        if (strcasecmp(bookings[i].mode, mode) == 0 &&
+            strcmp(bookings[i].date, date) == 0) {
+
+            int s = bookings[i].seatNumber;
+            if (s > 0 && s <= MAX_SEATS)
+                taken[s - 1] = 1;
         }
     }
 
-    printf("Available seats: ");
-    int any = 0;
+    int totalSeats = MAX_SEATS;
+    int booked = 0;
+
     for (int i = 0; i < MAX_SEATS; i++) {
-        if (!taken[i]) {
-            printf("%d ", i + 1);
-            any = 1;
-        }
+        if (taken[i]) booked++;
     }
 
-    if (!any) {
-        printf("None");
-    }
+    int available = totalSeats - booked;
 
-    printf("\n");
+    printf("Total seats: %d\n", totalSeats);
+    printf("Booked seats: %d\n", booked);
+    printf("Available seats: %d\n", available);
 }
+
