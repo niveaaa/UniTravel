@@ -1,4 +1,4 @@
-# UniTravel – Ticket Reservation System (C Project)
+# UniTravel – Ticket Reservation System
 
 UniTravel is a console-based ticket reservation system written in C.  
 It allows users to book, cancel, and view tickets for Bus, Train, and Flight travel, with date-wise seat availability and persistent storage using text files.
@@ -120,7 +120,9 @@ Example:
 
 - Dynamic fare based on distance
 - Admin login system
-- orting and searching bookings
+- Sorting and searching bookings
 - Support for modifying existing tickets
 
 ---
+
+mera SDF khatam h 🥀
