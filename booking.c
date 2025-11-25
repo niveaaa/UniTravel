@@ -28,12 +28,12 @@ void bookTicket() {
         return;
     }
 
-    char buf[64];
+    char buf[128];
     int numTickets = 1;
 
     printf("\n--- Book Ticket ---\n");
 
-    /* Common inputs for all tickets */
+    /* Number of tickets */
     printf("Number of tickets to book: ");
     if (fgets(buf, sizeof(buf), stdin) == NULL) return;
     numTickets = atoi(buf);
@@ -46,37 +46,43 @@ void bookTicket() {
         return;
     }
 
-    Ticket temp;
-    /* Read common source/destination/mode/date */
+    Ticket common;
+    /* Common inputs for all tickets */
     printf("Source: ");
-    fgets(temp.source, sizeof(temp.source), stdin);
-    temp.source[strcspn(temp.source, "\n")] = '\0';
+    fgets(common.source, sizeof(common.source), stdin);
+    common.source[strcspn(common.source, "\n")] = '\0';
 
     printf("Destination: ");
-    fgets(temp.destination, sizeof(temp.destination), stdin);
-    temp.destination[strcspn(temp.destination, "\n")] = '\0';
+    fgets(common.destination, sizeof(common.destination), stdin);
+    common.destination[strcspn(common.destination, "\n")] = '\0';
 
     printf("Mode (Bus / Train / Flight): ");
-    fgets(temp.mode, sizeof(temp.mode), stdin);
-    temp.mode[strcspn(temp.mode, "\n")] = '\0';
+    fgets(common.mode, sizeof(common.mode), stdin);
+    common.mode[strcspn(common.mode, "\n")] = '\0';
 
     printf("Date (YYYY-MM-DD): ");
-    fgets(temp.date, sizeof(temp.date), stdin);
-    temp.date[strcspn(temp.date, "\n")] = '\0';
+    fgets(common.date, sizeof(common.date), stdin);
+    common.date[strcspn(common.date, "\n")] = '\0';
 
     /* Compute fare for one ticket once */
-    float singleFare = calculateFare(temp.mode, temp.source, temp.destination);
+    float singleFare = calculateFare(common.mode, common.source, common.destination);
 
+    int created = 0;
     for (int i = 0; i < numTickets; i++) {
-        Ticket t = temp; /* copy common fields */
+        Ticket t = common; /* copy common fields */
+
         printf("Passenger %d Name: ", i + 1);
-        fgets(t.passengerName, sizeof(t.passengerName), stdin);
+        if (fgets(t.passengerName, sizeof(t.passengerName), stdin) == NULL) {
+            printf("Input error.\n");
+            break;
+        }
         t.passengerName[strcspn(t.passengerName, "\n")] = '\0';
 
-        /* Seat allocation per ticket */
-        t.seatNumber = getAvailableSeat(t.mode);
+        /* Seat allocation per ticket (date-aware) */
+        t.seatNumber = getAvailableSeat(t.mode, t.date);
         if (t.seatNumber == -1) {
-            printf("No seats available for this mode (stopped after %d of %d).\n", i, numTickets);
+            printf("No seats available for %s on %s (stopped after %d of %d).\n",
+                   t.mode, t.date, created, numTickets);
             break;
         }
 
@@ -84,15 +90,18 @@ void bookTicket() {
         t.ticketID = generateTicketID();
 
         bookings[bookingCount++] = t;
-        printf("Ticket created: ID %d, Seat %d, Fare %.2f, Name: %s\n",
-               t.ticketID, t.seatNumber, t.fare, t.passengerName);
+        created++;
+
+        printf("Ticket created: ID %d, Seat %d, Fare %.2f, Name: %s, Date: %s\n",
+               t.ticketID, t.seatNumber, t.fare, t.passengerName, t.date);
     }
 
-    /* Save all changes */
-    saveDataToFile();
+    if (created > 0) {
+        saveDataToFile();
+    }
 
-    printf("\nBooked up to %d tickets. Total charged: %.2f\n",
-           numTickets, singleFare * (float)numTickets);
+    printf("\nBooked %d tickets. Total charged: %.2f\n",
+           created, singleFare * (float)created);
 }
 
 /* ================================
