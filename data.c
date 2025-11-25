@@ -26,13 +26,14 @@ void loadDataFromFile() {
 
     while (!feof(fp)) {
         Ticket t;
-        if (fscanf(fp, "%d,%49[^,],%29[^,],%29[^,],%9[^,],%d,%f\n",
+        if (fscanf(fp, "%d,%49[^,],%29[^,],%29[^,],%9[^,],%f,%11[^,],%d\n",
                    &t.ticketID,
                    t.passengerName,
                    t.source,
                    t.destination,
                    t.mode,
-                   &t.seatNumber,
+                   &t.fare,
+                   t.date,
                    &t.fare) == 7) {
             bookings[bookingCount++] = t;
         }
@@ -54,14 +55,15 @@ void saveDataToFile() {
     for (int i = 0; i < bookingCount; i++) {
         Ticket *t = &bookings[i];
 
-        fprintf(fp, "%d,%s,%s,%s,%s,%d,%.2f\n",
+        fprintf(fp, "%d,%s,%s,%s,%s,%.2f,%s,%d\n",
                 t->ticketID,
                 t->passengerName,
                 t->source,
                 t->destination,
                 t->mode,
-                t->seatNumber,
-                t->fare);
+                t->fare,
+                t->date,
+                t->seatNumber);
     }
 
     fclose(fp);
