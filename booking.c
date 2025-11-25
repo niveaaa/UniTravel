@@ -146,7 +146,7 @@ void displayBookings() {
         printf("\nTicket ID: %d\n", t->ticketID);
         printf("Name: %s\n", t->passengerName);
         printf("From: %s   To: %s\n", t->source, t->destination);
-        printf("Mode: %s\n", t->mode);
+        printf("Mode: %s   Date: %s\n", t->mode, t->date[0] ? t->date : "N/A");
         printf("Seat: %d\n", t->seatNumber);
         printf("Fare: %.2f\n", t->fare);
     }
@@ -156,15 +156,27 @@ void displayBookings() {
    SHOW SEAT AVAILABILITY
    ================================ */
 void showSeatAvailability(char mode[]) {
-    printf("\n--- Seat Availability for %s ---\n", mode);
+    char date[12];
+
+    printf("Enter date to check availability (YYYY-MM-DD): ");
+    if (fgets(date, sizeof(date), stdin) == NULL) {
+        printf("Input error.\n");
+        return;
+    }
+    date[strcspn(date, "\r\n")] = '\0';
+
+    printf("\n--- Seat Availability for %s on %s ---\n", mode, date);
 
     int taken[MAX_SEATS] = {0};
 
-    /* Mark seats already booked */
+    /* Mark seats already booked for that mode and date */
     for (int i = 0; i < bookingCount; i++) {
-        if (sameMode(bookings[i].mode, mode)) {
-            if (bookings[i].seatNumber > 0 && bookings[i].seatNumber <= MAX_SEATS)
-                taken[bookings[i].seatNumber - 1] = 1;
+        if (strcasecmp(bookings[i].mode, mode) == 0) {
+            if (bookings[i].date[0] != '\0' && strcmp(bookings[i].date, date) == 0) {
+                int s = bookings[i].seatNumber;
+                if (s > 0 && s <= MAX_SEATS)
+                    taken[s - 1] = 1;
+            }
         }
     }
 
