@@ -13,22 +13,18 @@
 #include "booking.h"
 
 /* Case-insensitive compare */
-static int sameMode(const char *a, const char *b) {
-    return strcasecmp(a, b) == 0;
-}
-
-/* ================================
-   SEAT ALLOCATION
-   ================================ */
-int getAvailableSeat(const char mode[]) {
+int getAvailableSeat(const char mode[], const char date[]) {
     int taken[MAX_SEATS] = {0};
 
-    /* Mark seats already taken for this mode */
+    /* Mark seats already taken for this mode AND date */
     for (int i = 0; i < bookingCount; i++) {
         if (sameMode(bookings[i].mode, mode)) {
-            int s = bookings[i].seatNumber;
-            if (s > 0 && s <= MAX_SEATS) {
-                taken[s - 1] = 1;
+            /* If booking has a date and it matches the requested date, mark seat taken */
+            if (bookings[i].date[0] != '\0' && strcmp(bookings[i].date, date) == 0) {
+                int s = bookings[i].seatNumber;
+                if (s > 0 && s <= MAX_SEATS) {
+                    taken[s - 1] = 1;
+                }
             }
         }
     }
