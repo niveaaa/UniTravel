@@ -111,3 +111,16 @@ Example:
 ```
 
 ### Limitations
+
+- Maximum bookings stored: 200
+- Maximum seats per mode per date: 50
+- Fare calculation uses fixed values per mode (can be improved)
+
+### Future Enhancements
+
+- Dynamic fare based on distance
+- Admin login system
+- orting and searching bookings
+- Support for modifying existing tickets
+
+---
