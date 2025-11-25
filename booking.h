@@ -20,6 +20,7 @@ typedef struct {
     char mode[10];      /* "Bus", "Train", or "Flight" */
     int seatNumber;
     float fare;
+    char date[12];      /* YYYY-MM-DD */
 } Ticket;
 
 /* Global array + counter declared elsewhere (in booking.c) */
